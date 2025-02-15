@@ -36,8 +36,8 @@ public class GameWindow extends JFrame
 	@SuppressWarnings({"unchecked"})
 	public GameWindow() {
  
-		setTitle ("A Game with a Bat and an Alien");
-		setSize (500, 550);
+		setTitle ("Snakey Game");
+		setSize (600, 600);
 
 		// create user interface objects
 
@@ -46,6 +46,11 @@ public class GameWindow extends JFrame
 		statusBarL = new JLabel ("Application Status: ");
 		keyL = new JLabel("Key Pressed: ");
 		mouseL = new JLabel("Location of Mouse Click: ");
+		
+		statusBarL.setForeground(Color.white);
+		keyL.setForeground(Color.white);
+		mouseL.setForeground(Color.white);
+
 
 		// create text fields and set their colour, etc.
 
@@ -57,13 +62,13 @@ public class GameWindow extends JFrame
 		keyTF.setEditable(false);
 		mouseTF.setEditable(false);
 
-		statusBarTF.setBackground(Color.CYAN);
-		keyTF.setBackground(Color.YELLOW);
-		mouseTF.setBackground(Color.GREEN);
+		statusBarTF.setBackground(new Color(209,189,161));
+		keyTF.setBackground(new Color(209,189,161));
+		mouseTF.setBackground(new Color(209,189,161));
 
 		// create buttons
 
-		startB = new JButton ("Show Bat");
+		startB = new JButton ("Show Snake");
 	        pauseB = new JButton ("Drop Alien");
 	        focusB = new JButton ("Focus on Key");
 		exitB = new JButton ("Exit");
@@ -96,7 +101,7 @@ public class GameWindow extends JFrame
 		JPanel infoPanel = new JPanel();
 		gridLayout = new GridLayout(3, 2);
 		infoPanel.setLayout(gridLayout);
-		infoPanel.setBackground(Color.ORANGE);
+		infoPanel.setBackground(new Color(39, 44, 51));
 
 		// add user interface objects to infoPanel
 	
@@ -128,7 +133,7 @@ public class GameWindow extends JFrame
 		mainPanel.add(infoPanel);
 		mainPanel.add(gamePanel);
 		mainPanel.add(buttonPanel);
-		mainPanel.setBackground(Color.PINK);
+		mainPanel.setBackground(new Color(22, 22, 21));
 
 		// set up mainPanel to respond to keyboard and mouse
 
@@ -168,7 +173,7 @@ public class GameWindow extends JFrame
 			gamePanel.drawGameEntities();
 
 		if (command.equals(pauseB.getText()))
-			gamePanel.dropAlien();
+			gamePanel.spawnFruit();
 
 		if (command.equals(exitB.getText()))
 			System.exit(0);
@@ -185,12 +190,42 @@ public class GameWindow extends JFrame
 		keyTF.setText(keyText + " pressed.");
 
 		if (keyCode == KeyEvent.VK_RIGHT) {
-			gamePanel.updateGameEntities(2);
+			gamePanel.updateGameEntities(3);
+			gamePanel.drawGameEntities();
+		}
+
+		if (keyCode == KeyEvent.VK_D) {
+			gamePanel.updateGameEntities(3);
 			gamePanel.drawGameEntities();
 		}
 
 		if (keyCode == KeyEvent.VK_LEFT) {
 			gamePanel.updateGameEntities(1);
+			gamePanel.drawGameEntities();
+		}
+
+		if (keyCode == KeyEvent.VK_A) {
+			gamePanel.updateGameEntities(1);
+			gamePanel.drawGameEntities();
+		}
+
+		if (keyCode == KeyEvent.VK_UP) {
+			gamePanel.updateGameEntities(2);
+			gamePanel.drawGameEntities();
+		}
+
+		if (keyCode == KeyEvent.VK_W) {
+			gamePanel.updateGameEntities(2);
+			gamePanel.drawGameEntities();
+		}
+
+		if (keyCode == KeyEvent.VK_DOWN) {
+			gamePanel.updateGameEntities(4);
+			gamePanel.drawGameEntities();
+		}
+		
+		if (keyCode == KeyEvent.VK_S) {
+			gamePanel.updateGameEntities(4);
 			gamePanel.drawGameEntities();
 		}
 	}
@@ -210,8 +245,8 @@ public class GameWindow extends JFrame
 		int x = e.getX();
 		int y = e.getY();
 
-		if (gamePanel.isOnBat(x, y)) {
-			statusBarTF.setText ("Mouse click on bat!");
+		if (gamePanel.isOnSnake(x, y)) {
+			statusBarTF.setText ("Mouse click on Fruit!");
 			statusBarTF.setBackground(Color.RED);
 		}
 		else {

@@ -1,3 +1,4 @@
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
 /**
@@ -6,52 +7,57 @@ import javax.swing.JPanel;
 
 public class GamePanel extends JPanel {
    
-   Bat bat;
-   Alien alien;
+   Snake snek;
+   Fruit fruit;
 
    public GamePanel () {
-	bat = null;
- 	alien = null;
+	snek = null;
+ 	fruit = null;
    }
 
 
    public void createGameEntities() {
-       bat = new Bat (this, 50, 350); 
-       alien = new Alien (this, 200, 10, bat); 
+       snek = new Snake (this, 50, 350); 
+       fruit = new Fruit (this, 200, 10, snek); 
    }
 
 
    public void drawGameEntities() {
 
-       if (bat != null) {
-       	  bat.draw();
+       if (snek != null) {
+       	  snek.draw();
        }
    }
 
 
    public void updateGameEntities(int direction) {
 
-	if (bat == null)
+	if (snek == null)
  	   return;
 
-	bat.erase();
-       	bat.move(direction);
+	snek.erase();
+       	snek.move(direction);
 
    }
 
 
-   public void dropAlien() {
-	if (alien != null) {
-		alien.start();
-	}
+   public void spawnFruit() {
+	   if (fruit != null) {
+	   	fruit.start();
+	   }
    }
 
 
-   public boolean isOnBat (int x, int y) {
-	if (bat != null)
-      	   return bat.isOnBat(x, y);
+   public boolean isOnSnake (int x, int y) {
+	if (snek != null)
+      	   return snek.isOnSnake(x, y);
   	else
 	   return false;
+   }
+
+   public void handleGameOver() {
+      JOptionPane.showMessageDialog(this, "Game Over!\nPress R to restart", "Game Over", JOptionPane.INFORMATION_MESSAGE);
+      System.exit(0);
    }
 
 }
