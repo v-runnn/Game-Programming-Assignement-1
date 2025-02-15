@@ -25,7 +25,7 @@ public class GameWindow extends JFrame
 
 	private JButton startB;
 	private JButton pauseB;
-	private JButton endB;
+	private JButton focusB;
 	private JButton exitB;
 
 	private Container c;
@@ -36,8 +36,8 @@ public class GameWindow extends JFrame
 	@SuppressWarnings({"unchecked"})
 	public GameWindow() {
  
-		setTitle ("A Game With Aliens");
-		setSize (500, 575);
+		setTitle ("A Game with a Bat and an Alien");
+		setSize (500, 550);
 
 		// create user interface objects
 
@@ -63,17 +63,18 @@ public class GameWindow extends JFrame
 
 		// create buttons
 
-	        startB = new JButton ("Start Game");
-	        pauseB = new JButton ("Pause Game");
-	        endB = new JButton ("End Game");
+		startB = new JButton ("Show Bat");
+	        pauseB = new JButton ("Drop Alien");
+	        focusB = new JButton ("Focus on Key");
 		exitB = new JButton ("Exit");
 
 		// add listener to each button (same as the current object)
 
 		startB.addActionListener(this);
 		pauseB.addActionListener(this);
-		endB.addActionListener(this);
+		focusB.addActionListener(this);
 		exitB.addActionListener(this);
+
 		
 		// create mainPanel
 
@@ -87,6 +88,8 @@ public class GameWindow extends JFrame
 
 		gamePanel = new GamePanel();
         	gamePanel.setPreferredSize(new Dimension(400, 400));
+		gamePanel.createGameEntities();
+
 
 		// create infoPanel
 
@@ -117,7 +120,7 @@ public class GameWindow extends JFrame
 
 		buttonPanel.add (startB);
 		buttonPanel.add (pauseB);
-		buttonPanel.add (endB);
+		buttonPanel.add (focusB);
 		buttonPanel.add (exitB);
 
 		// add sub-panels with GUI objects to mainPanel and set its colour
@@ -158,29 +161,14 @@ public class GameWindow extends JFrame
 		
 		statusBarTF.setText(command + " button clicked.");
 
-		if (command.equals(startB.getText())) {
-			gamePanel.startGame();
-		}
+		if (command.equals(focusB.getText()))
+			mainPanel.requestFocus();
 
-		if (command.equals(pauseB.getText())) {
-			gamePanel.pauseGame();
-		}
+		if (command.equals(startB.getText()))
+			gamePanel.drawGameEntities();
 
-/*
-		if (command.equals("Pause Game")) {
-			gamePanel.pauseGame();
-			pauseB.setText ("Resume");
-		}
-
-		if (command.equals("Resume")) {
-			gamePanel.pauseGame();
-			pauseB.setText ("Pause Game");
-		}
-*/
-		
-		if (command.equals(endB.getText())) {
-			gamePanel.endGame();
-		}
+		if (command.equals(pauseB.getText()))
+			gamePanel.dropAlien();
 
 		if (command.equals(exitB.getText()))
 			System.exit(0);
@@ -196,12 +184,14 @@ public class GameWindow extends JFrame
 		String keyText = e.getKeyText(keyCode);
 		keyTF.setText(keyText + " pressed.");
 
-		if (keyCode == KeyEvent.VK_LEFT) {
-			gamePanel.updateBat (1);
+		if (keyCode == KeyEvent.VK_RIGHT) {
+			gamePanel.updateGameEntities(2);
+			gamePanel.drawGameEntities();
 		}
 
-		if (keyCode == KeyEvent.VK_RIGHT) {
-			gamePanel.updateBat (2);
+		if (keyCode == KeyEvent.VK_LEFT) {
+			gamePanel.updateGameEntities(1);
+			gamePanel.drawGameEntities();
 		}
 	}
 
@@ -212,7 +202,6 @@ public class GameWindow extends JFrame
 	public void keyTyped(KeyEvent e) {
 
 	}
-
 
 	// implement methods in MouseListener interface
 

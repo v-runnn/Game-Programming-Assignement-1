@@ -1,8 +1,7 @@
-import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.Image;
 import java.awt.geom.Rectangle2D;
 import javax.swing.JPanel;
 
@@ -22,27 +21,21 @@ public class Bat {
    private Color backgroundColour;
    private Dimension dimension;
 
-   private Image batImage;
-   private Image batLeftImage;
-   private Image batRightImage;
 
    public Bat (JPanel p, int xPos, int yPos) {
       panel = p;
       dimension = panel.getSize();
+
       backgroundColour = panel.getBackground ();
       x = xPos;
       y = yPos;
 
-      dx = 10;
-      dy = 0;
+      dx = 10;	// make bigger (smaller) to increase (decrease) speed
+      dy = 0;	// no movement along y-axis allowed (i.e., move left to right only)
 
       width = 50;
-      height = 50;
+      height = 10;
 
-      // batLeftImage = ImageManager.loadImage ("BatLeft.gif");
-      // batRightImage = ImageManager.loadImage ("BatRight.gif");
-
-      batImage = batRightImage;
    }
 
 
@@ -50,7 +43,9 @@ public class Bat {
       Graphics g = panel.getGraphics ();
       Graphics2D g2 = (Graphics2D) g;
 
-      g2.drawImage(batImage, x, y, width, height, null);
+      bat = new Rectangle2D.Double(x, y, width, height);
+      g2.setColor(Color.RED);
+      g2.fill(bat);
 
       g.dispose();
    }
@@ -60,8 +55,7 @@ public class Bat {
       Graphics g = panel.getGraphics ();
       Graphics2D g2 = (Graphics2D) g;
 
-      // erase bat by drawing a rectangle on top of it with the background colour
-
+      // erase bat by drawing a rectangle on top of it
       g2.setColor (backgroundColour);
       g2.fill (new Rectangle2D.Double (x, y, width, height));
 
@@ -69,24 +63,24 @@ public class Bat {
    }
 
 
-	public void move (int direction) {
+   public void move (int direction) {
 
-		if (!panel.isVisible ()) return;
+      if (!panel.isVisible ()) return;
       
-		if (direction == 1) {			// going left
-			x = x - dx;
-	                batImage = batLeftImage;          
-			if (x < -30)			// move to right of GamePanel
-				x = 380;
-		}
-		else 
-		if (direction == 2) {			// going right
-			x = x + dx;
-          	  	batImage = batRightImage;
-			if (x > 380)			// move to left of GamePanel
-				x = -30;
-		}
-	}
+      dimension = panel.getSize();
+
+      if (direction == 1) {	// move left
+          x = x - dx;
+	  if (x < 0)
+	     x = 0;
+      }
+      else
+      if (direction == 2) {  	// move right
+          x = x + dx;
+	  if (x + width > dimension.width)
+	     x = dimension.width - width;
+      }
+   }
 
 
    public boolean isOnBat (int x, int y) {

@@ -1,14 +1,14 @@
-import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.Image;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Rectangle2D;
-import java.util.Random;
+import java.awt.geom.Line2D;
 import javax.swing.JPanel;
+import java.util.Random;
 
-public class Alien {
+public class Alien extends Thread {
 
    private JPanel panel;
 
@@ -18,8 +18,7 @@ public class Alien {
    private int width;
    private int height;
 
-   private int originalX;
-   private int originalY;
+   private int topY;		// regenerated alien drawn at this y coordinate
 
    Ellipse2D.Double head;	// ellipse drawn for face
 
@@ -29,44 +28,37 @@ public class Alien {
    private Color backgroundColour;
    private Dimension dimension;
 
-   private Random random;
+   boolean isRunning;
+
+   Random random;
 
    private Bat bat;
-   // private SoundManager soundManager;
-
-   private Image alienImage;
 
    public Alien (JPanel p, int xPos, int yPos, Bat bat) {
       panel = p;
       dimension = panel.getSize();
       backgroundColour = panel.getBackground ();
 
-      width = 58;
-      height = 52;
-
-      random = new Random();
-
       x = xPos;
       y = yPos;
+      topY = yPos;
 
-      setLocation();
-
-      dx = 0;			// no movement along x-axis
-      dy = 5;			// would like the alien to drop down
+      width = 30;
+      height = 45;
 
       this.bat = bat;
 
-      // soundManager = SoundManager.getInstance();
+      random = new Random();
 
-      // alienImage = ImageManager.loadImage ("Alien.png");
- 
+      dx = 0;			// no movement along x-axis
+      dy = 10;			// would like the alien to drop down
    }
 
-   
+
    public void setLocation() {
       int panelWidth = panel.getWidth();
       x = random.nextInt (panelWidth - width);
-      y = 10;
+      y = topY;
    }
 
 
@@ -74,9 +66,6 @@ public class Alien {
       Graphics g = panel.getGraphics ();
       Graphics2D g2 = (Graphics2D) g;
 
-      g2.drawImage(alienImage, x, y, width, height, null);
-
-/*
       // Draw the head
 
       head = new Ellipse2D.Double(x, y, width, height);
@@ -100,7 +89,20 @@ public class Alien {
       Rectangle2D.Double mouth = new Rectangle2D.Double(x+9, y+33, 14, 3);
       g2.setColor(Color.GREEN);
       g2.fill(mouth);
-*/
+
+      g.dispose();
+   }
+
+
+   public void erase () {
+      Graphics g = panel.getGraphics ();
+      Graphics2D g2 = (Graphics2D) g;
+
+      // erase face by drawing a rectangle on top of it
+
+      g2.setColor (backgroundColour);
+      g2.fill (new Rectangle2D.Double (x-10, y-10, 30+20, 45+20));
+
       g.dispose();
    }
 
@@ -113,42 +115,41 @@ public class Alien {
       y = y + dy;
 
       int height = panel.getHeight();
-      boolean collision = collidesWithBat();
-      
-      if (collision) {
-	//   soundManager.playClip("hit", false);
-	  setLocation();
-      }
 
+      boolean collision = collidesWithBat();
+
+      if (collision) {
+	  setLocation();		// regenerate alien at top
+      }
+      else
       if (y > height) {
 	  setLocation();
-	//   soundManager.playClip("appear", false);
 	  dy = dy + 1;			// speed up alien when it is re-generated at top
       }
-
    }
 
-/*
+
    public void run () {
+
+      isRunning = true;
+
       try {
-        for (int i = 1; i <= 5000; i++) {
-            //erase();
+        while (isRunning) {
+            erase();
 	    move ();
             draw();
-            Thread.sleep (50);			// increase value of sleep time to slow down ball
+            sleep (100);	// increase value of sleep time to slow down ball
          }
       }
       catch(InterruptedException e) {}
    }
-*/
 
-   public boolean isOnAlien (int x, int y) {
-      if (alienImage == null)
+
+   public boolean isOnHead (int x, int y) {
+      if (head == null)
       	  return false;
 
-      Rectangle2D.Double myRect = getBoundingRectangle();
-      
-      return myRect.contains(x, y);
+      return head.contains(x, y);
    }
 
 
