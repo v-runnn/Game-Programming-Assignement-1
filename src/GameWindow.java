@@ -36,7 +36,7 @@ public class GameWindow extends JFrame
 	@SuppressWarnings({"unchecked"})
 	public GameWindow() {
  
-		setTitle ("A Game with a Bat and an Alien");
+		setTitle ("Snakey");
 		setSize (500, 550);
 
 		// create user interface objects
@@ -45,7 +45,7 @@ public class GameWindow extends JFrame
 
 		statusBarL = new JLabel ("Application Status: ");
 		keyL = new JLabel("Key Pressed: ");
-		mouseL = new JLabel("Location of Mouse Click: ");
+		mouseL = new JLabel("Current Score: ");
 
 		// create text fields and set their colour, etc.
 
@@ -63,16 +63,12 @@ public class GameWindow extends JFrame
 
 		// create buttons
 
-		startB = new JButton ("Show Bat");
-	        pauseB = new JButton ("Drop Alien");
-	        focusB = new JButton ("Focus on Key");
+		startB = new JButton ("Start Game");
 		exitB = new JButton ("Exit");
 
 		// add listener to each button (same as the current object)
 
 		startB.addActionListener(this);
-		pauseB.addActionListener(this);
-		focusB.addActionListener(this);
 		exitB.addActionListener(this);
 
 		
@@ -83,11 +79,11 @@ public class GameWindow extends JFrame
 		mainPanel.setLayout(flowLayout);
 
 		GridLayout gridLayout;
-
+		
 		// create the gamePanel for game entities
 
 		gamePanel = new GamePanel();
-        	gamePanel.setPreferredSize(new Dimension(400, 400));
+        gamePanel.setPreferredSize(new Dimension(400, 400));
 		gamePanel.createGameEntities();
 
 
@@ -113,14 +109,12 @@ public class GameWindow extends JFrame
 		// create buttonPanel
 
 		JPanel buttonPanel = new JPanel();
-		gridLayout = new GridLayout(1, 4);
+		gridLayout = new GridLayout(1, 2);
 		buttonPanel.setLayout(gridLayout);
 
 		// add buttons to buttonPanel
 
 		buttonPanel.add (startB);
-		buttonPanel.add (pauseB);
-		buttonPanel.add (focusB);
 		buttonPanel.add (exitB);
 
 		// add sub-panels with GUI objects to mainPanel and set its colour
@@ -161,14 +155,10 @@ public class GameWindow extends JFrame
 		
 		statusBarTF.setText(command + " button clicked.");
 
-		if (command.equals(focusB.getText()))
-			mainPanel.requestFocus();
-
-		if (command.equals(startB.getText()))
-			gamePanel.drawGameEntities();
-
-		if (command.equals(pauseB.getText()))
-			gamePanel.dropAlien();
+		if (command.equals(startB.getText())){
+			gamePanel.startGame();
+			updateScore();
+		}
 
 		if (command.equals(exitB.getText()))
 			System.exit(0);
@@ -184,15 +174,33 @@ public class GameWindow extends JFrame
 		String keyText = e.getKeyText(keyCode);
 		keyTF.setText(keyText + " pressed.");
 
-		if (keyCode == KeyEvent.VK_RIGHT) {
+		updateScore();
+
+		if (keyCode == KeyEvent.VK_RIGHT || keyCode == KeyEvent.VK_D) {
+			gamePanel.updateGameEntities(3);
+			// gamePanel.drawGameEntities();
+			gamePanel.setDirection(3);
+		}
+		if (keyCode == KeyEvent.VK_LEFT || keyCode == KeyEvent.VK_A) {
+			gamePanel.updateGameEntities(1);
+			// gamePanel.drawGameEntities();
+			gamePanel.setDirection(1);
+		}
+		if(keyCode == KeyEvent.VK_UP || keyCode == KeyEvent.VK_W) {
 			gamePanel.updateGameEntities(2);
-			gamePanel.drawGameEntities();
+			// gamePanel.drawGameEntities();
+			gamePanel.setDirection(2);
+		}
+		if(keyCode == KeyEvent.VK_DOWN || keyCode == KeyEvent.VK_S) {
+			gamePanel.updateGameEntities(4);
+			// gamePanel.drawGameEntities();
+			gamePanel.setDirection(4);
 		}
 
-		if (keyCode == KeyEvent.VK_LEFT) {
-			gamePanel.updateGameEntities(1);
-			gamePanel.drawGameEntities();
-		}
+	}
+
+	public void updateScore() {
+		mouseTF.setText("Current Score: " + gamePanel.getScore());
 	}
 
 	public void keyReleased(KeyEvent e) {
@@ -206,20 +214,6 @@ public class GameWindow extends JFrame
 	// implement methods in MouseListener interface
 
 	public void mouseClicked(MouseEvent e) {
-
-		int x = e.getX();
-		int y = e.getY();
-
-		if (gamePanel.isOnBat(x, y)) {
-			statusBarTF.setText ("Mouse click on bat!");
-			statusBarTF.setBackground(Color.RED);
-		}
-		else {
-			statusBarTF.setText ("");
-			statusBarTF.setBackground(Color.CYAN);
-		}
-
-		mouseTF.setText("(" + x +", " + y + ")");
 
 	}
 
